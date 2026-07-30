@@ -1,0 +1,32 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Caches and virtual environments
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+
+# Project temporary & downloaded media
+downloads/*
+!downloads/.gitkeep
+*.part
+*.ytdl
+*.mp4
+*.mp3
+*.m4a
+*.webm
+
+# IDE and OS metadata
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Antigravity temporary scripts
+scratch/

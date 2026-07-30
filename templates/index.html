@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>PRICVYT - YouTube Downloader para Android 13+</title>
+    <meta name="description" content="Buscador y descargador interno de YouTube en la máxima calidad 4K, 1080p y MP3. Optimizado para dispositivos móviles Android 13+.">
+    <meta name="theme-color" content="#131b2e">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="/static/icons/icon-192.png">
+
+    <!-- Google Fonts & Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Estilos CSS Material UI 3 -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="m3-dark-theme">
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="m3-toast-container"></div>
+
+    <div class="m3-app-viewport">
+        <!-- Top App Bar (M3) -->
+        <header class="m3-top-app-bar">
+            <div class="m3-app-brand">
+                <span class="material-symbols-outlined brand-icon">play_circle</span>
+                <span class="brand-text">PRIC<span class="brand-gradient">VYT</span></span>
+            </div>
+            <div class="m3-top-actions">
+                <span class="m3-android-badge">
+                    <span class="material-symbols-outlined">android</span> Android 13+
+                </span>
+                <button type="button" id="pwaInstallBtn" class="m3-icon-button hidden" title="Instalar App">
+                    <span class="material-symbols-outlined">download_for_offline</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Sticky Search & Filter Bar Section -->
+        <div class="m3-search-sticky-container">
+            <form id="searchForm" class="m3-search-bar">
+                <span class="material-symbols-outlined search-icon">search</span>
+                <input type="text" id="searchInput" placeholder="Buscar en YouTube o pegar enlace..." autocomplete="off" enterkeyhint="search">
+                <button type="button" id="clearSearchBtn" class="m3-search-action hidden" title="Limpiar">
+                    <span class="material-symbols-outlined">cancel</span>
+                </button>
+                <button type="button" id="pasteSearchBtn" class="m3-search-action" title="Pegar del portapapeles">
+                    <span class="material-symbols-outlined">content_paste</span>
+                </button>
+                <button type="submit" class="m3-search-submit-btn" title="Buscar">
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+            </form>
+
+            <!-- Filter Chips (M3 Filter Chips) -->
+            <div class="m3-chips-scroll">
+                <button type="button" class="m3-chip active" data-query="tendencias">
+                    <span class="material-symbols-outlined">local_fire_department</span> Tendencias
+                </button>
+                <button type="button" class="m3-chip" data-query="musica latina">
+                    <span class="material-symbols-outlined">music_note</span> Música
+                </button>
+                <button type="button" class="m3-chip" data-query="podcasts en espanol">
+                    <span class="material-symbols-outlined">podcasts</span> Podcasts
+                </button>
+                <button type="button" class="m3-chip" data-query="gaming">
+                    <span class="material-symbols-outlined">sports_esports</span> Gaming
+                </button>
+                <button type="button" class="m3-chip" data-query="youtube shorts viral">
+                    <span class="material-symbols-outlined">movie</span> Shorts
+                </button>
+                <button type="button" class="m3-chip" data-query="tutoriales programacion">
+                    <span class="material-symbols-outlined">code</span> Tutoriales
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content Area with 3 Tab Views -->
+        <main class="m3-main-content">
+            
+            <!-- VIEW 1: BÚSQUEDA INTERNA DE YOUTUBE -->
+            <section id="viewSearch" class="m3-tab-view active">
+                <div class="m3-section-header">
+                    <h2 id="searchFeedTitle" class="m3-title-medium">
+                        <span class="material-symbols-outlined">explore</span> Tendencias destacadas
+                    </h2>
+                    <span id="searchResultCount" class="m3-label-medium">15 videos</span>
+                </div>
+
+                <!-- Skeleton Loading Feed -->
+                <div id="searchSkeletonFeed" class="m3-video-feed hidden">
+                    <div class="m3-skeleton-card"></div>
+                    <div class="m3-skeleton-card"></div>
+                    <div class="m3-skeleton-card"></div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="searchEmptyState" class="m3-empty-state hidden">
+                    <span class="material-symbols-outlined empty-icon">search_off</span>
+                    <h3>No se encontraron resultados</h3>
+                    <p>Intenta buscando con palabras clave diferentes como el nombre de una canción o artista.</p>
+                </div>
+
+                <!-- Search Results Video Cards Feed (NO VIDEO PLAYER) -->
+                <div id="searchResultsFeed" class="m3-video-feed"></div>
+            </section>
+
+            <!-- VIEW 2: ENLACE DIRECTO / ANALIZADOR MANUAL -->
+            <section id="viewDirect" class="m3-tab-view">
+                <div class="m3-direct-card">
+                    <h2 class="m3-title-large"><span class="material-symbols-outlined">link</span> Analizar enlace directo</h2>
+                    <p class="m3-body-medium">Ingresa o pega la URL completa de cualquier video o Short de YouTube para extraer todas las calidades de descarga.</p>
+
+                    <form id="directUrlForm" class="m3-direct-form">
+                        <div class="m3-input-field">
+                            <span class="material-symbols-outlined">link</span>
+                            <input type="url" id="directVideoUrl" placeholder="https://www.youtube.com/watch?v=..." required>
+                            <button type="button" id="directPasteBtn" class="m3-btn-text">
+                                <span class="material-symbols-outlined">content_paste</span> Pegar
+                            </button>
+                        </div>
+                        <button type="submit" id="directAnalyzeBtn" class="m3-btn-filled">
+                            <span class="btn-content"><span class="material-symbols-outlined">search</span> Analizar URL</span>
+                            <div class="m3-spinner hidden"></div>
+                        </button>
+                    </form>
+                </div>
+
+                <div id="directResultCard" class="m3-direct-result hidden">
+                    <!-- Dynamic preview loaded when analyzing manual URL -->
+                </div>
+            </section>
+
+            <!-- VIEW 3: GESTOR DE DESCARGAS E HISTORIAL -->
+            <section id="viewDownloads" class="m3-tab-view">
+                <div class="m3-section-header">
+                    <h2 class="m3-title-medium"><span class="material-symbols-outlined">download_for_offline</span> Gestor de Descargas</h2>
+                </div>
+
+                <!-- Active Downloads List -->
+                <div id="activeDownloadsContainer" class="m3-downloads-list">
+                    <div id="noActiveDownloads" class="m3-empty-state">
+                        <span class="material-symbols-outlined empty-icon">cloud_done</span>
+                        <h3>Sin descargas activas en este momento</h3>
+                        <p>Busca cualquier video en la pestaña Búsqueda y pulsa "Descargar" para iniciar.</p>
+                    </div>
+                </div>
+
+                <div class="m3-section-header" style="margin-top: 1.5rem;">
+                    <h3 class="m3-title-small"><span class="material-symbols-outlined">history</span> Historial de descargas de la sesión</h3>
+                    <button type="button" id="clearHistoryBtn" class="m3-btn-text hidden">Limpiar</button>
+                </div>
+                <div id="downloadHistoryContainer" class="m3-history-list">
+                    <p class="m3-body-small text-muted" id="historyEmptyText">Aún no has realizado descargas en esta sesión.</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Navigation Bar (M3 Navigation Bar) -->
+        <nav class="m3-bottom-nav">
+            <button type="button" class="m3-nav-item active" data-target="viewSearch">
+                <div class="m3-nav-icon-wrapper">
+                    <span class="material-symbols-outlined">search</span>
+                </div>
+                <span class="m3-nav-label">Búsqueda</span>
+            </button>
+            <button type="button" class="m3-nav-item" data-target="viewDirect">
+                <div class="m3-nav-icon-wrapper">
+                    <span class="material-symbols-outlined">link</span>
+                </div>
+                <span class="m3-nav-label">Enlace Directo</span>
+            </button>
+            <button type="button" class="m3-nav-item" data-target="viewDownloads">
+                <div class="m3-nav-icon-wrapper">
+                    <span class="material-symbols-outlined">download_for_offline</span>
+                    <span id="navDownloadsBadge" class="m3-nav-badge hidden">0</span>
+                </div>
+                <span class="m3-nav-label">Descargas</span>
+            </button>
+        </nav>
+
+        <!-- M3 Bottom Sheet Modal for Direct Format Download (NO VIDEO PLAYER) -->
+        <div id="bottomSheetOverlay" class="m3-bottom-sheet-overlay hidden">
+            <div id="bottomSheet" class="m3-bottom-sheet">
+                <div class="m3-bottom-sheet-drag-handle"></div>
+                <button type="button" id="closeBottomSheetBtn" class="m3-bottom-sheet-close">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+
+                <!-- Sheet Video Summary -->
+                <div class="m3-sheet-header">
+                    <div class="m3-sheet-thumb-box">
+                        <img id="sheetThumbnail" src="" alt="Miniatura">
+                        <span id="sheetDuration" class="m3-badge-time">00:00</span>
+                    </div>
+                    <div class="m3-sheet-info">
+                        <h3 id="sheetTitle" class="m3-sheet-title">Título del video...</h3>
+                        <p id="sheetAuthor" class="m3-sheet-meta">Canal</p>
+                    </div>
+                </div>
+
+                <!-- Format Selection Segmented Switch (Video vs Audio) -->
+                <div class="m3-segmented-button">
+                    <button type="button" id="sheetTabVideo" class="m3-segment active" data-type="video">
+                        <span class="material-symbols-outlined">videocam</span> Video (MP4)
+                    </button>
+                    <button type="button" id="sheetTabAudio" class="m3-segment" data-type="audio">
+                        <span class="material-symbols-outlined">audiotrack</span> Audio (MP3)
+                    </button>
+                </div>
+
+                <!-- Quality Selection Grid -->
+                <div class="m3-sheet-formats-container">
+                    <div id="sheetVideoFormats" class="m3-format-chips-grid"></div>
+                    <div id="sheetAudioFormats" class="m3-format-chips-grid hidden"></div>
+                </div>
+
+                <!-- Action Button & Progress inside Bottom Sheet -->
+                <div class="m3-sheet-action-area">
+                    <button type="button" id="sheetDownloadBtn" class="m3-btn-filled-primary">
+                        <span id="sheetDownloadText"><span class="material-symbols-outlined">download</span> Iniciar Descarga</span>
+                        <div id="sheetSpinner" class="m3-spinner hidden"></div>
+                    </button>
+
+                    <!-- Embedded Progress Bar in Bottom Sheet -->
+                    <div id="sheetProgressContainer" class="m3-sheet-progress-box hidden">
+                        <div class="m3-progress-row">
+                            <span id="sheetProgressStatus" class="m3-progress-status"><span class="material-symbols-outlined spinning">sync</span> Descargando...</span>
+                            <span id="sheetProgressPercent" class="m3-progress-percent">0%</span>
+                        </div>
+                        <div class="m3-linear-progress-track">
+                            <div id="sheetProgressBarFill" class="m3-linear-progress-fill" style="width: 0%;"></div>
+                        </div>
+                        <div class="m3-progress-footer">
+                            <span id="sheetProgressDetails" class="m3-progress-details">Conectando...</span>
+                            <button type="button" id="sheetCancelBtn" class="m3-btn-text-danger">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
