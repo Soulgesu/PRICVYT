@@ -209,9 +209,13 @@ async def download_file(
 
 if __name__ == "__main__":
     local_ip = get_local_ip()
-    print("\n" + "=" * 60)
-    print(" 🚀 PRICVYT - YouTube Downloader Web App (Ultra Fast Multithreaded)")
-    print(f" 🏠 Acceso Local (esta PC):           http://localhost:8080")
-    print(f" 📱 Acceso Red Wi-Fi (Celular/Otros): http://{local_ip}:8080")
-    print("=" * 60 + "\n")
+    print("\n" + "=" * 65)
+    print(" 🚀 PRICVYT - YouTube Downloader Web App")
+    print("=" * 65)
+    print(" 💻 Abre en tu navegador (esta PC):     http://localhost:8080")
+    print(f" 📱 Desde tu celular (misma red Wi-Fi): http://{local_ip}:8080")
+    print("-" * 65)
+    print(" ⚠️  NOTA: No intentes abrir '0.0.0.0' en tu navegador.")
+    print("           Usa siempre 'http://localhost:8080'.")
+    print("=" * 65 + "\n")
     uvicorn.run("app:app", host="0.0.0.0", port=8080, reload=True)
